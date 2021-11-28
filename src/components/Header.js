@@ -43,6 +43,7 @@ display: flex;
 align-items: center;
 padding: 0 36px;
 height: 70px;
+overflow-x: hidden;
 background-color: #090b13;
 `;
 
