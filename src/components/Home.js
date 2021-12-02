@@ -1,11 +1,21 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import styled from "styled-components";
 import ImgSlider from "./ImgSlider";
 import Viewers from "./Viewers";
 import Movies from "./Movies";
-
+import db from "../firebase";
+import data from "../moviesData";
+import {useDispatch } from "react-redux";
+import { setMovies } from "../features/movie/movieSlice";
 
 function Home() {
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(setMovies(data.movies));
+    },[])
+
     return (
         <Container>
             <ImgSlider/>

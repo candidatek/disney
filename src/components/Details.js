@@ -137,4 +137,5 @@ const Description = styled.div`
     line-height: 1.4;
     font-size: 20px;
     margin-top: 16px;
+    max-width: 700px;
 `;
