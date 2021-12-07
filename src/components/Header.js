@@ -1,11 +1,67 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import {
+    selectUserName,
+    selectUserPhoto,
+    setUserLogin,
+    setSignOut
+} from "../features/user/UserSlice";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
+import {auth, provider ,signInWithPopup, signOut , onAuthStateChanged} from "../firebase";
+
 
 function Header() {
+    const dispatch = useDispatch();
+    const userName = useSelector(selectUserName);
+    const userPhoto = useSelector(selectUserPhoto);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        onAuthStateChanged(auth, async (user) => {
+            if(user){
+                dispatch(setUserLogin({
+                    name: user.displayName,
+                    email: user.email,
+                    photo: user.photoURL
+                }));
+            //navigate("/");
+            }
+            
+        })
+    })
+
+    const signIn = () => {
+        signInWithPopup(auth , provider)
+        .then((result)=>{
+            let user = result.user;
+            dispatch(setUserLogin({
+                name: user.displayName,
+                email: user.email,
+                photo: user.photoURL
+            }));
+        });
+    }
+
+    const signOutUser = () =>{
+        signOut(auth)
+        .then(()=>{
+            dispatch(setSignOut());
+            navigate("/login");
+        })
+    }
+
     return (
         <Nav>
             <Logo src = "/images/logo.svg"/>
-            <NavMenu>
+            { !userName ? (
+                <LoginContainer>
+                    <Login onClick={signIn}>Login</Login> 
+                </LoginContainer>
+                
+            ) : (
+                <>
+                <NavMenu>
                 <a>
                     <img src="/images/home-icon.svg"/>
                     <span>HOME</span>
@@ -30,8 +86,11 @@ function Header() {
                     <img src="/images/series-icon.svg"/>
                     <span>SERIES</span>
                 </a>
-            </NavMenu>
-            <UserImg src="/images/original-icon.svg"/>
+                </NavMenu>
+                <UserImg onClick={signOutUser} src={userPhoto} alt={userName} />  
+                </>
+            ) }
+            
         </Nav>
     )
 }
@@ -98,7 +157,28 @@ const NavMenu = styled.div `
 `;
 
 const UserImg = styled.img`
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    border-radius: 47%;
+`;
+
+const Login =styled.div`
+    border: 1px solid #f9f9f9;
+    padding: 8px 16px;
+    letter-spacing:1.5px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease 0s;
+    &:hover {
+        background-color: #f9f9f9;
+        color: #000;
+    }
+`;
+
+const LoginContainer = styled.div`
+    flex:1;
+    display: flex;
+    justify-content: flex-end;
 `;

@@ -1,14 +1,29 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
-
+import { selectMovies } from "../features/movie/movieSlice";
+import { useSelector } from "react-redux";
+import db from "../firebase";
+import {Link} from "react-router-dom";
 function Details() {
+
+    const { id } = useParams();
+    let moviesData  = useSelector(selectMovies);
+    let movieData = moviesData.filter((movie) => {
+        return movie.id == id;
+    });
+    movieData = movieData[0];
+    if(movieData === undefined)
+        return <Link to="/"/>
+
+
     return (
         <Container>
             <Backgroud>
-            <img src="https://img1.hotstarext.com/image/upload/f_auto,t_web_m_1_5x/sources/r1/cms/prod/1331/641331-h" alt="Chhichhore" class=""/>
+            <img src={movieData.backgroundImg} alt={movieData.title} class=""/>
             </Backgroud>
             <ImageTitle>
-            <img src="https://img1.hotstarext.com/image/upload/f_auto,t_web_m_1_5x/sources/r1/cms/prod/1331/641331-h" alt="Chhichhore" class=""/>
+            <img src={movieData.titleImg} alt={movieData.title} class=""/>
             </ImageTitle>
             <Controls>
                 <PlayButton>
@@ -27,11 +42,10 @@ function Details() {
                 </GroupWatchButton>
             </Controls>
             <SubTitles>
-                Lorem ipsum dolor sit amet.
+               {movieData.subTitle}
             </SubTitles>
             <Description>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab odit porro quia optio. Ab sapiente voluptatem iure. 
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi quaerat reprehenderit accusantium.
+                {movieData.description}
             </Description>
         </Container>
     )
